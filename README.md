@@ -205,7 +205,7 @@ Este gráfico presenta el análisis de puntualidad y retrasos promedio por aerol
 
 ![Texto alternativo](retraso.png)
 
-Este gráfico muestra los aeropuertos con mayor retraso acumulado en minutos de despegue (DepDelay). Se destacan principalmente los aeropuertos DEN, IAH y ORD, los cuales tienen los mayores retrasos acumulados, superando los 25,000 minutos. Los aeropuertos de mayor volumen de retrasos se presentan en colores rojos más intensos, indicando la magnitud de la demora. Este análisis es crucial para identificar los aeropuertos más críticos en términos de retrasos y tomar decisiones basadas en la eficiencia operativa.
+Este gráfico muestra los aeropuertos con mayor retraso acumulado en minutos de despegue (DepDelay). Se destacan principalmente los aeropuertos DEN, IAH y ORD (DEN es el Aeropuerto Internacional de Denver; IAH es el Aeropuerto Intercontinental George Bush en Houston; y ORD es el Aeropuerto Internacional O'Hare de Chicago), los cuales tienen los mayores retrasos acumulados, superando los 25,000 minutos. Los aeropuertos de mayor volumen de retrasos se presentan en colores rojos más intensos, indicando la magnitud de la demora. Este análisis es crucial para identificar los aeropuertos más críticos en términos de retrasos y tomar decisiones basadas en la eficiencia operativa.
 
 ![Texto alternativo](cancelaciones.png)
 
