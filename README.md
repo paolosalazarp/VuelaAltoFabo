@@ -126,7 +126,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna                         | Tipo          | Descripción                           |
 | ------------------------------- | ------------- | ------------------------------------- |
-| dim_vuelo_id (PK)                   | INT(PK)           | Identificador del vuelo (PK).         |
+| dim_vuelo_id (PK)               | INT(PK)           | Identificador del vuelo (PK).         |
 | Flight_Number_Marketing_Airline | NVARCHAR(100) | Número de vuelo (código comercial).   |
 | Flight_Number_Operating_Airline | NVARCHAR(100) | Número de vuelo operado (si difiere). |
 
@@ -175,7 +175,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna     | Tipo | Descripción                 |
 | ----------- | ---- | --------------------------- |
-| dim_hora_id | INT (PK) | Identificador de hora (PK). |
+| dim_hora_id | INT(PK) | Identificador de hora (PK). |
 | Hora        | INT  | Hora (00–23).               |
 | Minuto      | INT  | Minutos (00–59).            |
 
