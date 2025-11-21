@@ -211,7 +211,36 @@ Este gráfico muestra los aeropuertos con mayor retraso acumulado en minutos de 
 
 Este gráfico muestra el porcentaje de cancelaciones y disrupciones por aerolínea. Las aerolíneas como Trans States Airlines y Commutair Aka C. presentan los mayores porcentajes de cancelación, con valores cercanos o superiores al 6%. Por otro lado, aerolíneas como SkyWest Airlines y ExpressJet Airlines tienen los porcentajes más bajos, por debajo del 1%. Este análisis permite identificar las aerolíneas con mayor impacto en términos de cancelaciones y disrupciones operativas.
 
+## Conclusiones
 
+1. **Retrasos por Aeropuerto**  
+   El análisis reveló que ciertos aeropuertos, como DEN e IAH, acumulan significativamente más minutos de retraso en comparación con otros. Esta información es crucial para optimizar la programación y gestión de vuelos en estos hubs críticos.
+
+2. **Puntualidad de las Aerolíneas**  
+   Se identificaron las aerolíneas con mejores y peores desempeños en términos de puntualidad. Aerolíneas como Trans States Airlines mostraron altos niveles de retraso, mientras que otras como SkyWest destacaron por su fiabilidad.
+
+3. **Impacto de Cancelaciones**  
+   Los datos muestran que ciertas aerolíneas, como Trans States Airlines, tienen tasas de cancelación superiores al 6%, lo que impacta negativamente en la experiencia del cliente y en la operación.
+
+4. **Datos para Decisiones Estratégicas**  
+   Gracias al modelo de datos creado, ahora es posible realizar análisis detallados sobre la puntualidad, las tasas de cancelación y el impacto de los retrasos, lo que proporciona una base sólida para la toma de decisiones operativas.
+
+## Recomendaciones
+
+1. **Optimización de la Programación**  
+   Ajustar los horarios de vuelos en los aeropuertos con mayores retrasos para reducir la congestión y mejorar la puntualidad general, sobre todo en aeropuertos como DEN y IAH.
+
+2. **Mejoras en la Gestión de Aeronaves**  
+   Implementar buffers adicionales en aeropuertos con altos niveles de retraso para mejorar la eficiencia en las transferencias y minimizar las demoras.
+
+3. **Estrategias de Mitigación de Cancelaciones**  
+   Para aerolíneas con altas tasas de cancelación, como Trans States Airlines, revisar los procesos operativos internos y evaluar la reasignación de aeronaves para reducir las disrupciones.
+
+4. **Focalizar Iniciativas de Mejora**  
+   Concentrar esfuerzos en aerolíneas y rutas con el peor desempeño (por ejemplo, aquellas con altos niveles de desvíos y retrasos) para mejorar la puntualidad y la eficiencia operativa.
+
+5. **Seguimiento Continuo**  
+   Utilizar los dashboards para monitorear la evolución de los KPIs de puntualidad, cancelación y retraso en tiempo real, permitiendo ajustes operativos rápidos y basados en datos.
 ## Referencias
 
 - **IBM**. (s.f.). ¿Qué es Business Intelligence (BI)? *IBM Think*. Recuperado de [https://www.ibm.com/mx-es/think/topics/business-intelligence](https://www.ibm.com/mx-es/think/topics/business-intelligence)
