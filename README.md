@@ -156,7 +156,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 | Columna          | Tipo          | Descripción                      |
 | ---------------- | ------------- | -------------------------------- |
 | dim_aerolinea_id | INT(PK)          | ID interno de aerolínea (PK).    |
-| Airline          | NVARCHAR(200) | Código o nombre de la aerolínea. |
+| Airline          | NVARCHAR(200) | Nombre de la aerolínea. |
 
 
 ### Dim_fecha
