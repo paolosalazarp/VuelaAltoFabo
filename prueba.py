@@ -19,7 +19,7 @@ st.markdown("Análisis de retrasos, rutas, aerolíneas y comportamiento temporal
 # CARGA DE DATOS DESDE LA API
 # ------------------------------------------------------------
 
-API_URL = "https://grows-affected-villages-folks.trycloudflare.com/data"  # <--- TU URL
+API_URL = "https://dvd-shall-katie-citizenship.trycloudflare.com/data"  # <--- TU URL
 
 @st.cache_data(show_spinner=True)
 def load_data():
