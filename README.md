@@ -201,9 +201,16 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 ![Texto alternativo](puntualidad.png)
 
+Este gráfico presenta el análisis de puntualidad y retrasos promedio por aerolínea, medido en minutos de retraso al aterrizaje (ArrDelay). Las aerolíneas con mayores retrasos, como Trans States Airlines y Compass Airlines, se muestran con barras más largas hacia la derecha, indicando un retraso promedio superior a los 20 minutos. Las aerolíneas con menores retrasos, como SkyWest Airlines y Delta Air Lines, se ubican hacia la izquierda, con valores cercanos a 0 o incluso negativos, lo que indica una puntualidad mayor. Este análisis resalta las aerolíneas con mayor y menor desempeño en términos de puntualidad.
+
 ![Texto alternativo](retraso.png)
 
+Este gráfico muestra los aeropuertos con mayor retraso acumulado en minutos de despegue (DepDelay). Se destacan principalmente los aeropuertos DEN, IAH y ORD, los cuales tienen los mayores retrasos acumulados, superando los 25,000 minutos. Los aeropuertos de mayor volumen de retrasos se presentan en colores rojos más intensos, indicando la magnitud de la demora. Este análisis es crucial para identificar los aeropuertos más críticos en términos de retrasos y tomar decisiones basadas en la eficiencia operativa.
+
 ![Texto alternativo](cancelaciones.png)
+
+Este gráfico muestra el porcentaje de cancelaciones y disrupciones por aerolínea. Las aerolíneas como Trans States Airlines y Commutair Aka C. presentan los mayores porcentajes de cancelación, con valores cercanos o superiores al 6%. Por otro lado, aerolíneas como SkyWest Airlines y ExpressJet Airlines tienen los porcentajes más bajos, por debajo del 1%. Este análisis permite identificar las aerolíneas con mayor impacto en términos de cancelaciones y disrupciones operativas.
+
 
 ## Referencias
 
