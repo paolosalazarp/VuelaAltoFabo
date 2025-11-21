@@ -1,347 +1,226 @@
-# app.py
 import streamlit as st
-import pyodbc
 import pandas as pd
+import requests
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.write("Secrets cargados:", list(st.secrets.keys()))
-
-# -----------------------------
+# ------------------------------------------------------------
 # CONFIGURACIÓN GENERAL
-# -----------------------------
+# ------------------------------------------------------------
 st.set_page_config(
-    page_title="Dashboard de Vuelos",
-    layout="wide",
+    page_title="Dashboard Profesional de Vuelos",
     page_icon="✈️",
+    layout="wide",
 )
 
 st.title("✈️ Dashboard Profesional de Vuelos")
+st.markdown("Análisis de retrasos, rutas, aerolíneas y comportamiento temporal.")
 
-st.markdown(
-    """
-    Este dashboard muestra el comportamiento de los vuelos:
-    retrasos, aerolíneas, rutas, tiempos y más.  
-    Usa los filtros de la izquierda para explorar la información.
-    """
-)
+# ------------------------------------------------------------
+# CARGA DE DATOS DESDE LA API FASTAPI
+# ------------------------------------------------------------
 
-# -----------------------------
-# CONEXIÓN A SQL SERVER
-# -----------------------------
-@st.cache_resource
-def get_connection():
-    cfg = st.secrets
-    conn = pyodbc.connect(
-        f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-        f"SERVER={cfg.server};"
-        f"DATABASE={cfg.database};"
-        f"UID={cfg.username};"
-        f"PWD={cfg.password};"
-    )
-    return conn
+API_URL = "https://grows-affected-villages-folks.trycloudflare.com/data"  # ← TU URL AQUÍ
 
-# -----------------------------
-# CARGA DE DATOS
-# -----------------------------
 @st.cache_data(show_spinner=True)
 def load_data():
-    conn = get_connection()
-
-    # OJO: si tus nombres cambian, ajusta este SELECT
-    query = """
-    SELECT
-        f.fact_id,
-        df.FlightDate,
-        df.[Year],
-        df.[Month],
-        df.DayOfWeek,
-        o.Origin,
-        o.OriginCityName,
-        o.OriginStateName,
-        d.Dest,
-        d.DestCityName,
-        d.DestStateName,
-        a.Airline,
-        f.AirTime,
-        f.Distance,
-        f.DepDelay,
-        f.ArrDelay,
-        c.Cancelled,
-        dv.Diverted
-    FROM fact_vuelos f
-        INNER JOIN dim_fecha df
-            ON f.dim_fecha_id = df.dim_fecha_id
-        INNER JOIN dim_origen o
-            ON f.dim_origen_id = o.dim_origen_id
-        INNER JOIN dim_destino d
-            ON f.dim_destino_id = d.dim_destino_id
-        INNER JOIN dim_aerolinea a
-            ON f.dim_aerolinea_id = a.dim_aerolinea_id
-        LEFT JOIN dim_cancelacion c
-            ON f.dim_cancelacion_id = c.dim_cancelacion_id
-        LEFT JOIN dim_desviacion dv
-            ON f.dim_desviacion_id = dv.dim_desviacion_id
-    -- TOP opcional para pruebas:
-    -- ORDER BY df.FlightDate
-    """
-    df = pd.read_sql(query, conn)
-
-    # Casting de tipos
-    df["FlightDate"] = pd.to_datetime(df["FlightDate"])
-    df["DepDelay"] = pd.to_numeric(df["DepDelay"], errors="coerce")
-    df["ArrDelay"] = pd.to_numeric(df["ArrDelay"], errors="coerce")
-    df["Distance"] = pd.to_numeric(df["Distance"], errors="coerce")
-    df["AirTime"] = pd.to_numeric(df["AirTime"], errors="coerce")
-
-    # Columnas booleanas normalizadas
-    if "Cancelled" in df.columns:
-        df["Cancelled"] = df["Cancelled"].fillna(0)
-    if "Diverted" in df.columns:
-        df["Diverted"] = df["Diverted"].fillna(0)
-
+    r = requests.get(API_URL, timeout=60)
+    r.raise_for_status()
+    df = pd.DataFrame(r.json())
+    df["FlightDate"] = pd.to_datetime(df["FlightDate"], errors="coerce")
     return df
 
-with st.spinner("Cargando datos de SQL Server..."):
+with st.spinner("Cargando datos..."):
     df = load_data()
 
-# -----------------------------
+st.success(f"Datos cargados: {len(df):,} registros")
+
+# ------------------------------------------------------------
 # SIDEBAR – FILTROS
-# -----------------------------
-st.sidebar.header("🧪 Filtros")
+# ------------------------------------------------------------
 
-# Rango de fechas
-min_date = df["FlightDate"].min()
-max_date = df["FlightDate"].max()
+st.sidebar.header("🔎 Filtros")
 
-date_range = st.sidebar.date_input(
-    "Rango de fechas",
-    value=(min_date, max_date),
-    min_value=min_date,
-    max_value=max_date
-)
+# Fechas
+min_date, max_date = df["FlightDate"].min(), df["FlightDate"].max()
+date_range = st.sidebar.date_input("Rango de fechas", (min_date, max_date))
 
 # Aerolínea
 airlines = st.sidebar.multiselect(
     "Aerolínea",
-    options=sorted(df["Airline"].dropna().unique()),
-    default=sorted(df["Airline"].dropna().unique())[:10],  # para no reventar todo
+    sorted(df["Airline"].dropna().unique())
 )
 
-# Origen y destino
+# Origen / Destino
 origins = st.sidebar.multiselect(
     "Aeropuerto de origen",
-    options=sorted(df["Origin"].dropna().unique()),
-    default=None
+    sorted(df["Origin"].dropna().unique())
 )
 
 destinations = st.sidebar.multiselect(
     "Aeropuerto de destino",
-    options=sorted(df["Dest"].dropna().unique()),
-    default=None
+    sorted(df["Dest"].dropna().unique())
 )
 
-# Filtro por retraso de llegada
-max_delay = int(df["ArrDelay"].fillna(0).max())
+# Rango de retraso
 delay_range = st.sidebar.slider(
-    "Rango de retraso de llegada (minutos)",
-    min_value=int(df["ArrDelay"].fillna(0).min()),
-    max_value=max_delay,
-    value=(0, max_delay)
+    "Retraso llegada (min)",
+    int(df["ArrDelay"].min()),
+    int(df["ArrDelay"].max()),
+    (0, int(df["ArrDelay"].max()))
 )
 
-# Cancelados / desviados
-show_cancelled = st.sidebar.selectbox(
-    "Incluir vuelos cancelados",
-    ["Todos", "Solo no cancelados", "Solo cancelados"]
-)
-
-show_diverted = st.sidebar.selectbox(
-    "Incluir vuelos desviados",
-    ["Todos", "Solo no desviados", "Solo desviados"]
-)
-
-# -----------------------------
+# ------------------------------------------------------------
 # APLICAR FILTROS
-# -----------------------------
+# ------------------------------------------------------------
+
 df_filtered = df.copy()
 
 # Fecha
-if isinstance(date_range, tuple) and len(date_range) == 2:
-    start_date, end_date = date_range
+if len(date_range) == 2:
+    start, end = date_range
     df_filtered = df_filtered[
-        (df_filtered["FlightDate"] >= pd.to_datetime(start_date)) &
-        (df_filtered["FlightDate"] <= pd.to_datetime(end_date))
+        (df_filtered["FlightDate"] >= pd.to_datetime(start)) &
+        (df_filtered["FlightDate"] <= pd.to_datetime(end))
     ]
 
-# Aerolínea
 if airlines:
     df_filtered = df_filtered[df_filtered["Airline"].isin(airlines)]
 
-# Origen
 if origins:
     df_filtered = df_filtered[df_filtered["Origin"].isin(origins)]
 
-# Destino
 if destinations:
     df_filtered = df_filtered[df_filtered["Dest"].isin(destinations)]
 
-# Rango de retraso llegada
 df_filtered = df_filtered[
     (df_filtered["ArrDelay"] >= delay_range[0]) &
     (df_filtered["ArrDelay"] <= delay_range[1])
 ]
 
-# Cancelados
-if "Cancelled" in df_filtered.columns:
-    if show_cancelled == "Solo no cancelados":
-        df_filtered = df_filtered[df_filtered["Cancelled"] == 0]
-    elif show_cancelled == "Solo cancelados":
-        df_filtered = df_filtered[df_filtered["Cancelled"] == 1]
+st.markdown(f"### Resultados filtrados: **{len(df_filtered):,}** vuelos")
 
-# Desviados
-if "Diverted" in df_filtered.columns:
-    if show_diverted == "Solo no desviados":
-        df_filtered = df_filtered[df_filtered["Diverted"] == 0]
-    elif show_diverted == "Solo desviados":
-        df_filtered = df_filtered[df_filtered["Diverted"] == 1]
-
-st.markdown(f"### Resultados filtrados: {len(df_filtered):,} vuelos")
-
-# -----------------------------
-# FILA 1 – KPIs
-# -----------------------------
+# ------------------------------------------------------------
+# KPIs
+# ------------------------------------------------------------
 col1, col2, col3, col4 = st.columns(4)
 
 total_vuelos = len(df_filtered)
-prom_depdelay = df_filtered["DepDelay"].mean()
-prom_arrdelay = df_filtered["ArrDelay"].mean()
-porc_cancelados = 100 * df_filtered["Cancelled"].sum() / total_vuelos if "Cancelled" in df_filtered.columns and total_vuelos > 0 else 0
-porc_desviados = 100 * df_filtered["Diverted"].sum() / total_vuelos if "Diverted" in df_filtered.columns and total_vuelos > 0 else 0
+avg_dep = df_filtered["DepDelay"].mean()
+avg_arr = df_filtered["ArrDelay"].mean()
+cancelados = df_filtered["Cancelled"].sum()
+desviados = df_filtered["Diverted"].sum()
 
-col1.metric("Total de vuelos", f"{total_vuelos:,}")
-col2.metric("Retraso promedio salida (min)", f"{prom_depdelay:,.1f}")
-col3.metric("Retraso promedio llegada (min)", f"{prom_arrdelay:,.1f}")
-col4.metric("% Cancelados / Desviados", f"{porc_cancelados:,.1f}% / {porc_desviados:,.1f}%")
+col1.metric("Total vuelos", f"{total_vuelos:,}")
+col2.metric("Retraso promedio salida", f"{avg_dep:,.1f} min")
+col3.metric("Retraso promedio llegada", f"{avg_arr:,.1f} min")
+col4.metric("Cancelados / Desviados", f"{cancelados} / {desviados}")
 
-# -----------------------------
-# FILA 2 – TIEMPO Y AEROLÍNEAS
-# -----------------------------
-col5, col6 = st.columns(2)
+# ------------------------------------------------------------
+# GRÁFICO 1 – Vuelos por mes
+# ------------------------------------------------------------
 
-# Vuelos por mes
-df_mes = (
+st.subheader("📅 Vuelos por mes")
+
+df_month = (
     df_filtered
-    .assign(YearMonth=lambda x: x["FlightDate"].dt.to_period("M").astype(str))
-    .groupby("YearMonth")
-    .agg(Vuelos=("fact_id", "count"),
-         RetrasoPromedio=("ArrDelay", "mean"))
-    .reset_index()
+    .assign(Month=df_filtered["FlightDate"].dt.to_period("M").astype(str))
+    .groupby("Month")
+    .size()
+    .reset_index(name="Vuelos")
 )
 
-with col5:
-    st.subheader("Vuelos por mes")
-    if not df_mes.empty:
-        fig_mes = px.bar(
-            df_mes,
-            x="YearMonth",
-            y="Vuelos",
-            labels={"YearMonth": "Mes", "Vuelos": "Número de vuelos"},
-        )
-        st.plotly_chart(fig_mes, use_container_width=True)
-    else:
-        st.info("No hay datos para los filtros seleccionados.")
+if not df_month.empty:
+    fig1 = px.bar(df_month, x="Month", y="Vuelos", title="Vuelos por mes")
+    st.plotly_chart(fig1, use_container_width=True)
+else:
+    st.info("No hay datos para este filtro.")
 
-# Retraso promedio por aerolínea
+# ------------------------------------------------------------
+# GRÁFICO 2 – Retraso por aerolínea
+# ------------------------------------------------------------
+
+st.subheader("🛫 Retraso promedio por aerolínea")
+
 df_airline = (
-    df_filtered
-    .groupby("Airline")
-    .agg(
-        Vuelos=("fact_id", "count"),
-        RetrasoLlegada=("ArrDelay", "mean")
-    )
+    df_filtered.groupby("Airline")["ArrDelay"]
+    .mean()
     .reset_index()
-    .sort_values("Vuelos", ascending=False)
-    .head(15)
+    .sort_values("ArrDelay", ascending=False)
 )
 
-with col6:
-    st.subheader("Retraso promedio por aerolínea")
-    if not df_airline.empty:
-        fig_air = px.bar(
-            df_airline,
-            x="Airline",
-            y="RetrasoLlegada",
-            hover_data=["Vuelos"],
-            labels={"Airline": "Aerolínea", "RetrasoLlegada": "Retraso promedio llegada (min)"},
-        )
-        st.plotly_chart(fig_air, use_container_width=True)
-    else:
-        st.info("No hay datos para los filtros seleccionados.")
+if not df_airline.empty:
+    fig2 = px.bar(
+        df_airline,
+        x="Airline",
+        y="ArrDelay",
+        title="Retraso promedio de llegada por aerolínea",
+        labels={"ArrDelay": "Retraso (min)"}
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+else:
+    st.info("No hay datos para este filtro.")
 
-# -----------------------------
-# FILA 3 – RUTAS
-# -----------------------------
-st.subheader("Top 15 rutas (Origen → Destino) por cantidad de vuelos")
+# ------------------------------------------------------------
+# GRÁFICO 3 – Top rutas
+# ------------------------------------------------------------
 
-df_rutas = (
+st.subheader("🗺️ Top rutas con más vuelos")
+
+df_routes = (
     df_filtered
-    .assign(Ruta=lambda x: x["Origin"] + " → " + x["Dest"])
+    .assign(Ruta=df_filtered["Origin"] + " → " + df_filtered["Dest"])
     .groupby("Ruta")
-    .agg(
-        Vuelos=("fact_id", "count"),
-        RetrasoPromedio=("ArrDelay", "mean")
-    )
-    .reset_index()
+    .size()
+    .reset_index(name="Vuelos")
     .sort_values("Vuelos", ascending=False)
     .head(15)
 )
 
-if not df_rutas.empty:
-    fig_rutas = px.bar(
-        df_rutas,
+if not df_routes.empty:
+    fig3 = px.bar(
+        df_routes,
         x="Ruta",
         y="Vuelos",
-        hover_data=["RetrasoPromedio"],
-        labels={"Ruta": "Ruta", "Vuelos": "Número de vuelos"},
+        title="Top 15 rutas más activas",
     )
-    st.plotly_chart(fig_rutas, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True)
 else:
-    st.info("No hay datos para los filtros seleccionados.")
+    st.info("No hay datos para este filtro.")
 
-# -----------------------------
-# FILA 4 – DISTANCIA vs TIEMPO
-# -----------------------------
-st.subheader("Relación distancia vs tiempo en aire")
+# ------------------------------------------------------------
+# GRÁFICO 4 – Distancia vs Tiempo en Aire
+# ------------------------------------------------------------
 
-df_scatter = df_filtered.dropna(subset=["Distance", "AirTime"]).copy()
+st.subheader("✈️ Relación: Distancia vs Tiempo en Aire")
+
+df_scatter = df_filtered.dropna(subset=["Distance", "AirTime"])
+
 if not df_scatter.empty:
-    fig_scatter = px.scatter(
-        df_scatter.sample(min(5000, len(df_scatter))),  # para no explotar el navegador
+    fig4 = px.scatter(
+        df_scatter.sample(min(3000, len(df_scatter))),  # para no saturar
         x="Distance",
         y="AirTime",
         color="Airline",
-        size="ArrDelay",
-        labels={"Distance": "Distancia (millas)", "AirTime": "Tiempo en aire (min)"},
-        hover_data=["Origin", "Dest"]
+        hover_data=["Origin", "Dest"],
+        title="Distancia vs Tiempo en Aire",
     )
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
 else:
-    st.info("No hay datos suficientes para este gráfico.")
+    st.info("No hay datos para este filtro.")
 
-# -----------------------------
+# ------------------------------------------------------------
 # TABLA DETALLADA
-# -----------------------------
-st.subheader("Detalle de vuelos (primeros 500 registros filtrados)")
+# ------------------------------------------------------------
 
-df_table = df_filtered.sort_values("FlightDate").head(500)
-st.dataframe(df_table)
+st.subheader("📋 Detalle de vuelos")
 
-# Botón de descarga
+st.dataframe(df_filtered.head(500))
+
 csv = df_filtered.to_csv(index=False).encode("utf-8")
 st.download_button(
-    label="⬇️ Descargar datos filtrados (CSV)",
-    data=csv,
-    file_name="vuelos_filtrados.csv",
-    mime="text/csv",
+    "⬇️ Descargar CSV filtrado",
+    csv,
+    "vuelos_filtrados.csv",
+    "text/csv"
 )
