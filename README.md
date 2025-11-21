@@ -94,99 +94,90 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 ### Fact Vuelos
 
-| Columna             | Tipo     | Descripción                                                                                                  |
-| ------------------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| idFact            | BIGINT   | Clave sustituta de la fila de hechos. Identificador único de cada vuelo registrado.                          |
-| iddate            | INT      | FK a Dim_fecha (fecha del vuelo). Indica el día específico del vuelo.                                        |
-| idaeropuerto      | INT      | FK a Dim_origen (aeropuerto de origen). Identifica el aeropuerto de salida del vuelo.                        |
-| idvuelo           | INT      | FK a Dim_vuelo (número de vuelo). Identificador único del vuelo (puede ser marketing o código de operación). |
-| iddestino         | INT      | FK a Dim_destino (aeropuerto de destino). Identifica el aeropuerto de llegada del vuelo.                     |
-| idAirline         | INT      | FK a Dim_aerolinea. Identifica la aerolínea que opera el vuelo.                                              |
-| idavion           | INT      | FK a Dim_avion (número de cola del avión). Identificador de la aeronave utilizada.                           |
-| id_desviacion     | INT      | FK a Dim_desviacion. Identificador del desvío de vuelo (si el vuelo fue desviado a otro aeropuerto).         |
-| id_cancelacion    | INT      | FK a Dim_cancelacion. Identificador de la cancelación del vuelo (si el vuelo fue cancelado).                 |
-| DepDelayMinutes   | SMALLINT | Retraso de salida en minutos.                                                                                |
-| ArrDelayMinutes   | SMALLINT | Retraso de llegada en minutos.                                                                               |
-| TaxiOut           | SMALLINT | Tiempo de rodaje antes del despegue en minutos.                                                              |
-| TaxiIn            | SMALLINT | Tiempo de rodaje después del aterrizaje en minutos.                                                          |
-| ActualElapsedTime | SMALLINT | Tiempo total puerta a puerta en minutos.                                                                     |
-| AirTime           | SMALLINT | Tiempo en aire en minutos.                                                                                   |
-| CarrierDelay      | SMALLINT | Retraso de la aerolínea en minutos.                                                                          |
-| WeatherDelay      | SMALLINT | Retraso por clima en minutos.                                                                                |
-| NASDelay          | SMALLINT | Retraso por sistema nacional de aeronaves en minutos.                                                        |
-| SecurityDelay     | SMALLINT | Retraso por seguridad en minutos.                                                                            |
-| LateAircraftDelay | SMALLINT | Retraso por aeronave tardía en minutos.                                                                      |
-| DivArrDelay       | SMALLINT | Retraso de llegada de vuelo desviado en minutos.                                                             |
-| DivDistance       | INT      | Distancia del vuelo desviado en millas.                                                                      |
-| TotalAddGTime     | SMALLINT | Tiempo total adicional en                                                                                    |
+| Columna            | Tipo  | Descripción                                                       |
+| ------------------ | ----- | ----------------------------------------------------------------- |
+| fact_id            | INT   | Identificador interno del registro en la tabla de hechos.         |
+| dim_fecha_id       | INT   | Llave foránea hacia la dimensión de fecha.                        |
+| dim_hora_id        | INT   | Llave foránea hacia la dimensión de hora (hora-minuto de salida). |
+| dim_avion_id       | INT   | Llave foránea hacia información del avión.                        |
+| dim_vuelo_id       | INT   | Llave foránea hacia dimensiones del número de vuelo.              |
+| dim_origen_id      | INT   | Llave foránea hacia el aeropuerto origen.                         |
+| dim_destino_id     | INT   | Llave foránea hacia el aeropuerto destino.                        |
+| dim_aerolinea_id   | INT   | Llave foránea hacia la aerolínea.                                 |
+| dim_desviacion_id  | INT   | Llave foránea hacia información de desvíos.                       |
+| dim_cancelacion_id | INT   | Llave foránea hacia información de cancelación.                   |
+| ActualElapsedTime  | FLOAT | Minutos totales transcurridos de operación del vuelo.             |
+| AirTime            | FLOAT | Minutos reales en el aire.                                        |
+| Distance           | FLOAT | Distancia del vuelo en millas.                                    |
+| DepDelay           | FLOAT | Minutos de retraso al despegue.                                   |
+| ArrDelay           | FLOAT | Minutos de retraso al aterrizaje.                                 |
+
+
+
 
 ### Dim_avion
 
-| Columna       | Tipo        | Descripción                                                                                                                                            |
-| ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| idavion     | INT         | **Clave sustituta** para el avión. Identificador único de cada aeronave.                                                                               |
-| Tail_Number | VARCHAR(10) | **Número de cola** del avión. Es el identificador único de la aeronave, asignado por la autoridad aeronáutica correspondiente (por ejemplo, "N12345"). |
+| Columna      | Tipo          | Descripción                  |
+| ------------ | ------------- | ---------------------------- |
+| dim_avion_id | INT           | Identificador de avión (PK). |
+| Tail_Number  | NVARCHAR(100) | Matrícula del avión.         |
 
 ### Dim_vuelo
 
-| Columna                           | Tipo        | Descripción                                                                                                         |
-| --------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
-| idvuelo                         | INT         | **Clave sustituta** para el vuelo. Identificador único de cada vuelo.                                               |
-| Flight_Number_Marketing_Airline | VARCHAR(10) | Número de vuelo **marketing** de la aerolínea. Es el número utilizado por la aerolínea para comercializar el vuelo. |
-| Flight_Number_Operating_Airline | VARCHAR(10) | Número de vuelo **operativo** de la aerolínea. Es el número real utilizado por la aerolínea operadora del vuelo.    |
+| Columna                         | Tipo          | Descripción                           |
+| ------------------------------- | ------------- | ------------------------------------- |
+| dim_vuelo_id                    | INT           | Identificador del vuelo (PK).         |
+| Flight_Number_Marketing_Airline | NVARCHAR(100) | Número de vuelo (código comercial).   |
+| Flight_Number_Operating_Airline | NVARCHAR(100) | Número de vuelo operado (si difiere). |
 
 ### Dim_origen
 
-| Columna              | Tipo         | Descripción                                          |
-| -------------------- | ------------ | ---------------------------------------------------- |
-| idaeropuerto       | INT          | Clave sustituta para el aeropuerto de origen.        |
-| OriginAirportID    | INT          | ID del aeropuerto de origen asignado por el DOT.     |
-| OriginAirportSeqID | INT          | ID de secuencia del aeropuerto asignado por el DOT.  |
-| OriginCityMarketID | INT          | ID de mercado de ciudad asignado por el DOT.         |
-| Origin             | VARCHAR(10)  | Código IATA/ICAO del aeropuerto de origen.           |
-| OriginCityName     | VARCHAR(100) | Nombre de la ciudad del aeropuerto de origen.        |
-| OriginState        | VARCHAR(5)   | Código del estado del aeropuerto de origen.          |
-| OriginStateFips    | VARCHAR(5)   | Código FIPS del estado del aeropuerto de origen.     |
-| OriginStateName    | VARCHAR(100) | Nombre completo del estado del aeropuerto de origen. |
-| OriginWac          | INT          | Código del área mundial del aeropuerto de origen.    |
+| Columna         | Tipo          | Descripción                              |
+| --------------- | ------------- | ---------------------------------------- |
+| dim_origen_id   | INT           | Identificador de aeropuerto origen (PK). |
+| Origin          | NVARCHAR(20)  | Código IATA (ej. LAX, JFK).              |
+| OriginCityName  | NVARCHAR(200) | Nombre de la ciudad de origen.           |
+| OriginState     | NVARCHAR(20)  | Código del estado.                       |
+| OriginStateName | NVARCHAR(200) | Nombre del estado.                       |
+
 
 ### Dim_destino
 
-| Columna            | Tipo         | Descripción                                                    |
-| ------------------ | ------------ | -------------------------------------------------------------- |
-| iddestino        | INT          | Clave sustituta para el aeropuerto de destino.                 |
-| DestAirportID    | INT          | ID del aeropuerto de destino asignado por el DOT.              |
-| DestAirportSeqID | INT          | ID de secuencia del aeropuerto de destino asignado por el DOT. |
-| DestCityMarketID | INT          | ID de mercado de ciudad asignado por el DOT para el destino.   |
-| Dest             | VARCHAR(10)  | Código IATA/ICAO del aeropuerto de destino.                    |
-| DestCityName     | VARCHAR(100) | Nombre de la ciudad del aeropuerto de destino.                 |
-| DestState        | VARCHAR(5)   | Código del estado del aeropuerto de destino.                   |
-| DestStateFips    | VARCHAR(5)   | Código FIPS del estado del aeropuerto de destino.              |
-| DestStateName    | VARCHAR(100) | Nombre completo del estado del aeropuerto de destino.          |
-| DestWac          | INT          | Código del área mundial del aeropuerto de destino.             |
+| Columna        | Tipo          | Descripción                               |
+| -------------- | ------------- | ----------------------------------------- |
+| dim_destino_id | INT           | Identificador de aeropuerto destino (PK). |
+| Dest           | NVARCHAR(20)  | Código IATA destino.                      |
+| DestCityName   | NVARCHAR(200) | Ciudad destino.                           |
+| DestState      | NVARCHAR(20)  | Estado destino (abreviado).               |
+| DestStateName  | NVARCHAR(200) | Nombre del estado.                        |
+
 
 ### Dim_aerolinea
-| Columna                       | Tipo         | Descripción                                           |
-| ----------------------------- | ------------ | ----------------------------------------------------- |
-| IdAirline                   | INT          | Clave sustituta para la aerolínea.                    |
-| Marketing_Airline_Network   | VARCHAR(100) | Red de aerolíneas de marketing.                       |
-| DOT_ID_Marketing_Airline    | INT          | ID del marketing de la aerolínea asignado por el DOT. |
-| IATA_Code_Marketing_Airline | VARCHAR(3)   | Código IATA de la aerolínea de marketing.             |
-| Operating_Airline           | VARCHAR(100) | Aerolínea operativa.                                  |
-| DOT_ID_Operating_Airline    | INT          | ID de la aerolínea operativa asignado por el DOT.     |
-| IATA_Code_Operating_Airline | VARCHAR(3)   | Código IATA de la aerolínea operativa.                |
+| Columna          | Tipo          | Descripción                      |
+| ---------------- | ------------- | -------------------------------- |
+| dim_aerolinea_id | INT           | ID interno de aerolínea (PK).    |
+| Airline          | NVARCHAR(200) | Código o nombre de la aerolínea. |
+
 
 ### Dim_fecha
 
-| Columna      | Tipo     | Descripción                                                                             |
-| ------------ | -------- | --------------------------------------------------------------------------------------- |
-| Iddate     | INT      | Clave sustituta para la fecha. Identificador único para cada fecha en la base de datos. |
-| Year       | SMALLINT | Año de la fecha del vuelo (por ejemplo, 2024).                                          |
-| Quarter    | TINYINT  | Trimestre (1-4) de la fecha del vuelo.                                                  |
-| Month      | TINYINT  | Mes de la fecha del vuelo (1-12).                                                       |
-| DayofMonth | TINYINT  | Día del mes (1-31).                                                                     |
-| DayOfWeek  | TINYINT  | Día de la semana (1-7).                                                                 |
-| FlightDate | DATE     | Fecha natural del vuelo (en formato YYYY-MM-DD).                                      |
+| Columna      | Tipo | Descripción                     |
+| ------------ | ---- | ------------------------------- |
+| dim_fecha_id | INT  | Identificador de la fecha (PK). |
+| FlightDate   | DATE | Fecha del vuelo (YYYY-MM-DD).   |
+| Year         | INT  | Año del vuelo.                  |
+| Quarter      | INT  | Trimestre del año.              |
+| Month        | INT  | Mes.                            |
+| DayOfMonth   | INT  | Día del mes.                    |
+| DayOfWeek    | INT  | Día de la semana (1–7).         |
+
+### Dim_hora
+
+| Columna     | Tipo | Descripción                 |
+| ----------- | ---- | --------------------------- |
+| dim_hora_id | INT  | Identificador de hora (PK). |
+| Hora        | INT  | Hora (00–23).               |
+| Minuto      | INT  | Minutos (00–59).            |
 
 ### Dim_cancelacion
 | Columna            | Tipo        | Descripción                                     |
@@ -198,18 +189,10 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 ### Dim_desviacion
 
-| Columna            | Tipo        | Descripción                                                             |
-| ------------------ | ----------- | ----------------------------------------------------------------------- |
-| id_desviacion    | INT         | Clave sustituta para la desviación del vuelo.                           |
-| Diverted         | BIT         | Indicador de vuelo desviado (1 = Sí, 0 = No).                           |
-| Div1Airport      | VARCHAR(10) | Código del primer aeropuerto desviado.                                  |
-| Div1AirportID    | INT         | ID del primer aeropuerto desviado.                                      |
-| Div1AirportSeqID | INT         | ID de secuencia del primer aeropuerto desviado.                         |
-| Div1WheelsOn     | VARCHAR(5)  | Hora de aterrizaje en el primer aeropuerto desviado.                    |
-| Div1TotalGTime   | SMALLINT    | Tiempo total en tierra en minutos en el primer aeropuerto desviado.     |
-| Div1LongestGTime | SMALLINT    | Tiempo más largo en tierra en minutos en el primer aeropuerto desviado. |
-| Div1WheelsOff    | VARCHAR(5)  | Hora de despegue del primer aeropuerto desviado.                        |
-| Div1TailNum      | VARCHAR(10) | Número de cola de la aeronave utilizada en el vuelo desviado.           |
+| Columna            | Tipo | Descripción                        |
+| ------------------ | ---- | ---------------------------------- |
+| dim_cancelacion_id | INT  | Identificador de cancelación (PK). |
+| Cancelled          | INT  | Indicador 0/1 de cancelación.      |
 
 
 ## Referencias
