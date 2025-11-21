@@ -119,14 +119,14 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna      | Tipo          | Descripción                  |
 | ------------ | ------------- | ---------------------------- |
-| dim_avion_id | INT (PK)          | Identificador de avión (PK). |
+| dim_avion_id | INT(PK)          | Identificador de avión (PK). |
 | Tail_Number  | NVARCHAR(100) | Matrícula del avión.         |
 
 ### Dim_vuelo
 
 | Columna                         | Tipo          | Descripción                           |
 | ------------------------------- | ------------- | ------------------------------------- |
-| dim_vuelo_id (PK)                   | INT           | Identificador del vuelo (PK).         |
+| dim_vuelo_id (PK)                   | INT(PK)           | Identificador del vuelo (PK).         |
 | Flight_Number_Marketing_Airline | NVARCHAR(100) | Número de vuelo (código comercial).   |
 | Flight_Number_Operating_Airline | NVARCHAR(100) | Número de vuelo operado (si difiere). |
 
@@ -155,7 +155,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 ### Dim_aerolinea
 | Columna          | Tipo          | Descripción                      |
 | ---------------- | ------------- | -------------------------------- |
-| dim_aerolinea_id | INT (PK)          | ID interno de aerolínea (PK).    |
+| dim_aerolinea_id | INT(PK)          | ID interno de aerolínea (PK).    |
 | Airline          | NVARCHAR(200) | Código o nombre de la aerolínea. |
 
 
