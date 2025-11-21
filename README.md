@@ -120,15 +120,15 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 | Columna      | Tipo          | Descripción                  |
 | ------------ | ------------- | ---------------------------- |
 | dim_avion_id | INT(PK)          | Identificador de avión (PK). |
-| Tail_Number  | NVARCHAR(100) | Matrícula del avión.         |
+| Tail_Number  | NVARCHAR(100) | Número de cola del avión. Es el identificador único de la aeronave, asignado por la autoridad aeronáutica correspondiente.         |
 
 ### Dim_vuelo
 
 | Columna                         | Tipo          | Descripción                           |
 | ------------------------------- | ------------- | ------------------------------------- |
 | dim_vuelo_id (PK)               | INT(PK)           | Identificador del vuelo (PK).         |
-| Flight_Number_Marketing_Airline | NVARCHAR(100) | Número de vuelo (código comercial).   |
-| Flight_Number_Operating_Airline | NVARCHAR(100) | Número de vuelo operado (si difiere). |
+| Flight_Number_Marketing_Airline | NVARCHAR(100) |Número de vuelo marketing de la aerolínea. Es el número utilizado por la aerolínea para comercializar el vuelo.  |
+| Flight_Number_Operating_Airline | NVARCHAR(100) |Número de vuelo operativo de la aerolínea. Es el número real utilizado por la aerolínea operadora del vuelo.|
 
 ### Dim_origen
 
@@ -155,7 +155,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 ### Dim_aerolinea
 | Columna          | Tipo          | Descripción                      |
 | ---------------- | ------------- | -------------------------------- |
-| dim_aerolinea_id | INT(PK)          | ID interno de aerolínea (PK).    |
+| dim_aerolinea_id | INT(PK)          | Identificador de aerolínea (PK).    |
 | Airline          | NVARCHAR(200) | Nombre de la aerolínea. |
 
 
@@ -167,9 +167,9 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 | FlightDate   | DATE | Fecha del vuelo (YYYY-MM-DD).   |
 | Year         | INT  | Año del vuelo.                  |
 | Quarter      | INT  | Trimestre del año.              |
-| Month        | INT  | Mes.                            |
-| DayOfMonth   | INT  | Día del mes.                    |
-| DayOfWeek    | INT  | Día de la semana (1–7).         |
+| Month        | INT  | Mes del vuelo.                  |
+| DayOfMonth   | INT  | Día del mes del vuelo.          |
+| DayOfWeek    | INT  | Día de la semana (1–7) del vuelo.  |
 
 ### Dim_hora
 
@@ -182,7 +182,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 ### Dim_cancelacion
 | Columna            | Tipo        | Descripción                                     |
 | ------------------ | ----------- | ----------------------------------------------- |
-| id_cancelacion   | INT(PK)      | Clave sustituta para la cancelación del vuelo.  |
+| id_cancelacion   | INT(PK)      | Identificador de cancelación del vuelo.  |
 | Cancelled        | BIT         | Indicador de cancelación (1 = Sí, 0 = No).      |
 | CancellationCode | VARCHAR(10) | Código de cancelación que especifica el motivo. |
 
