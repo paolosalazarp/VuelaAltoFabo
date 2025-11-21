@@ -47,6 +47,9 @@ Los retrasos y cancelaciones generan costos directos (combustible adicional, rep
 
 Las empresas aéreas enfrentan dificultad de identificar con claridad la proporción de vuelos retrasados, cancelados o desviados debido al alto volumen, variabilidad y complejidad operativa de los datos que generan diariamente. Para este proyecto se emplea el “Flight Delay Dataset 2018–2022” (Kaggle), que reúne información histórica masiva de vuelos (horarios programados y reales, códigos de aerolíneas, aeropuertos de origen y destino, métricas de retraso/cancelación, distancia, entre otros).
 
+La base de datos está disponible en el siguiente enlace:
+https://drive.google.com/drive/folders/1CF7CDKkXqdKbD1jDnxES2CT8WT85z97C?usp=sharing
+
 El problema que se busca resolver puede resumirse en los siguientes puntos:
 
 - Volumen y dispersión de datos: información operativa en grandes volúmenes y múltiples archivos/fuentes dificulta su explotación.
