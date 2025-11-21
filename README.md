@@ -96,16 +96,16 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna            | Tipo  | Descripción                                                       |
 | ------------------ | ----- | ----------------------------------------------------------------- |
-| fact_id            | INT   | Identificador interno del registro en la tabla de hechos.         |
-| dim_fecha_id       | INT   | Llave foránea hacia la dimensión de fecha.                        |
-| dim_hora_id        | INT   | Llave foránea hacia la dimensión de hora (hora-minuto de salida). |
-| dim_avion_id       | INT   | Llave foránea hacia información del avión.                        |
-| dim_vuelo_id       | INT   | Llave foránea hacia dimensiones del número de vuelo.              |
-| dim_origen_id      | INT   | Llave foránea hacia el aeropuerto origen.                         |
-| dim_destino_id     | INT   | Llave foránea hacia el aeropuerto destino.                        |
-| dim_aerolinea_id   | INT   | Llave foránea hacia la aerolínea.                                 |
-| dim_desviacion_id  | INT   | Llave foránea hacia información de desvíos.                       |
-| dim_cancelacion_id | INT   | Llave foránea hacia información de cancelación.                   |
+| fact_id            | INT(PK)   | Identificador interno del registro en la tabla de hechos.         |
+| dim_fecha_id       | INT(FK)   | Llave foránea hacia la dimensión de fecha.                        |
+| dim_hora_id        | INT(FK)   | Llave foránea hacia la dimensión de hora (hora-minuto de salida). |
+| dim_avion_id       | INT(FK)   | Llave foránea hacia información del avión.                        |
+| dim_vuelo_id       | INT(FK)  | Llave foránea hacia dimensiones del número de vuelo.              |
+| dim_origen_id      | INT(FK)   | Llave foránea hacia el aeropuerto origen.                         |
+| dim_destino_id     | INT(FK)   | Llave foránea hacia el aeropuerto destino.                        |
+| dim_aerolinea_id   | INT(FK)   | Llave foránea hacia la aerolínea.                                 |
+| dim_desviacion_id  | INT(FK)   | Llave foránea hacia información de desvíos.                       |
+| dim_cancelacion_id | INT(FK)   | Llave foránea hacia información de cancelación.                   |
 | ActualElapsedTime  | FLOAT | Minutos totales transcurridos de operación del vuelo.             |
 | AirTime            | FLOAT | Minutos reales en el aire.                                        |
 | Distance           | FLOAT | Distancia del vuelo en millas.                                    |
@@ -119,14 +119,14 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna      | Tipo          | Descripción                  |
 | ------------ | ------------- | ---------------------------- |
-| dim_avion_id | INT           | Identificador de avión (PK). |
+| dim_avion_id | INT (PK)          | Identificador de avión (PK). |
 | Tail_Number  | NVARCHAR(100) | Matrícula del avión.         |
 
 ### Dim_vuelo
 
 | Columna                         | Tipo          | Descripción                           |
 | ------------------------------- | ------------- | ------------------------------------- |
-| dim_vuelo_id                    | INT           | Identificador del vuelo (PK).         |
+| dim_vuelo_id (PK)                   | INT           | Identificador del vuelo (PK).         |
 | Flight_Number_Marketing_Airline | NVARCHAR(100) | Número de vuelo (código comercial).   |
 | Flight_Number_Operating_Airline | NVARCHAR(100) | Número de vuelo operado (si difiere). |
 
@@ -134,7 +134,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna         | Tipo          | Descripción                              |
 | --------------- | ------------- | ---------------------------------------- |
-| dim_origen_id   | INT           | Identificador de aeropuerto origen (PK). |
+| dim_origen_id   | INT(PK)           | Identificador de aeropuerto origen (PK). |
 | Origin          | NVARCHAR(20)  | Código IATA (ej. LAX, JFK).              |
 | OriginCityName  | NVARCHAR(200) | Nombre de la ciudad de origen.           |
 | OriginState     | NVARCHAR(20)  | Código del estado.                       |
@@ -145,7 +145,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna        | Tipo          | Descripción                               |
 | -------------- | ------------- | ----------------------------------------- |
-| dim_destino_id | INT           | Identificador de aeropuerto destino (PK). |
+| dim_destino_id | INT(PK)           | Identificador de aeropuerto destino (PK). |
 | Dest           | NVARCHAR(20)  | Código IATA destino.                      |
 | DestCityName   | NVARCHAR(200) | Ciudad destino.                           |
 | DestState      | NVARCHAR(20)  | Estado destino (abreviado).               |
@@ -155,7 +155,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 ### Dim_aerolinea
 | Columna          | Tipo          | Descripción                      |
 | ---------------- | ------------- | -------------------------------- |
-| dim_aerolinea_id | INT           | ID interno de aerolínea (PK).    |
+| dim_aerolinea_id | INT (PK)          | ID interno de aerolínea (PK).    |
 | Airline          | NVARCHAR(200) | Código o nombre de la aerolínea. |
 
 
@@ -163,7 +163,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna      | Tipo | Descripción                     |
 | ------------ | ---- | ------------------------------- |
-| dim_fecha_id | INT  | Identificador de la fecha (PK). |
+| dim_fecha_id | INT(PK)  | Identificador de la fecha (PK). |
 | FlightDate   | DATE | Fecha del vuelo (YYYY-MM-DD).   |
 | Year         | INT  | Año del vuelo.                  |
 | Quarter      | INT  | Trimestre del año.              |
@@ -175,14 +175,14 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna     | Tipo | Descripción                 |
 | ----------- | ---- | --------------------------- |
-| dim_hora_id | INT  | Identificador de hora (PK). |
+| dim_hora_id | INT (PK) | Identificador de hora (PK). |
 | Hora        | INT  | Hora (00–23).               |
 | Minuto      | INT  | Minutos (00–59).            |
 
 ### Dim_cancelacion
 | Columna            | Tipo        | Descripción                                     |
 | ------------------ | ----------- | ----------------------------------------------- |
-| id_cancelacion   | INT         | Clave sustituta para la cancelación del vuelo.  |
+| id_cancelacion   | INT(PK)      | Clave sustituta para la cancelación del vuelo.  |
 | Cancelled        | BIT         | Indicador de cancelación (1 = Sí, 0 = No).      |
 | CancellationCode | VARCHAR(10) | Código de cancelación que especifica el motivo. |
 
@@ -191,7 +191,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 
 | Columna            | Tipo | Descripción                        |
 | ------------------ | ---- | ---------------------------------- |
-| dim_cancelacion_id | INT  | Identificador de cancelación (PK). |
+| dim_cancelacion_id | INT(PK)| Identificador de cancelación  . |
 | Cancelled          | INT  | Indicador 0/1 de cancelación.      |
 
 
