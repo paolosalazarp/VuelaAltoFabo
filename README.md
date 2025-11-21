@@ -197,7 +197,7 @@ Estos KPIs se calcularán sobre tablas de hechos (vuelos) con dimensiones confor
 | dim_cancelacion_id | INT(PK)| Identificador de cancelación  . |
 | Cancelled          | INT  | Indicador 0/1 de cancelación.      |
 
-### Resultados
+## Resultados
 
 ![Texto alternativo](puntualidad.png)
 
